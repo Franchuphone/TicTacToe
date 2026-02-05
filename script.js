@@ -1,24 +1,20 @@
 function Gameboard() {
-    const rows = 3;
-    const columns = 3;
+
     const board = [];
 
-    for ( let i = 0; i < rows; i++ ) {
-        board[ i ] = [];
-        for ( let j = 0; j < columns; j++ ) {
-            board[ i ].push( Cell() );
-        }
+    for ( let i = 0; i < 9; i++ ) {
+        board.push( Cell() );
     }
+
 
     const getBoard = () => board;
 
     const addBoardMark = ( cell, player ) => {
-        if ( cell.getValue() ) return;
-        cell.addMark( player );
+        board[ cell ].addMark( player );
     };
 
     const printBoard = () => {
-        const boardWithCellValues = board.map( ( row ) => row.map( ( cell ) => cell.getValue() ) )
+        const boardWithCellValues = board.map( ( cell ) => cell.getValue() )
         console.log( boardWithCellValues );
     };
 
@@ -71,6 +67,7 @@ function GameController(
     };
 
     const playRound = ( cell ) => {
+        if ( board.getBoard()[ cell ].getValue() ) return;
         console.log( `${ getActivePlayer().name } has just played` );
         board.addBoardMark( cell, getActivePlayer().token );
 
@@ -107,27 +104,26 @@ function ScreenController() {
         playerTurnDiv.textContent = `${ activePlayer.name }'s turn...`
 
         // Render board squares
-        board.forEach( row => {
-            row.forEach( ( cell, index ) => {
-                // Anything clickable should be a button!!
-                const cellButton = document.createElement( "button" );
-                cellButton.classList.add( "cell" );
-                // Create a data attribute to identify the column
-                // This makes it easier to pass into our `playRound` function 
-                cellButton.dataset.column = index
-                cellButton.textContent = cell.getValue();
-                boardDiv.appendChild( cellButton );
-            } )
-        } )
+        board.forEach( ( cell, index ) => {
+            // Anything clickable should be a button!!
+            const cellButton = document.createElement( "button" );
+            cellButton.classList.add( "cell" );
+            // Create a data attribute to identify the column
+            // This makes it easier to pass into our `playRound` function 
+            cellButton.dataset.cell = index;
+            cellButton.textContent = cell.getValue();
+            boardDiv.appendChild( cellButton );
+
+        } );
     }
 
     // Add event listener for the board
     function clickHandlerBoard( e ) {
-        const selectedColumn = e.target.dataset.column;
+        const selectedCell = e.target.dataset.cell;
         // Make sure I've clicked a column and not the gaps in between
-        if ( !selectedColumn ) return;
+        if ( !selectedCell ) return;
 
-        game.playRound( selectedColumn );
+        game.playRound( selectedCell );
         updateScreen();
     }
     boardDiv.addEventListener( "click", clickHandlerBoard );

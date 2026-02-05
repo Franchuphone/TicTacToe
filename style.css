@@ -1,7 +1,14 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .board {
+    margin: auto;
     display: grid;
-    height: 500px;
-    width: 500px;
+    width: min(600px, 70%);
+    aspect-ratio: 1/1;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     border: 1px solid black;
@@ -10,13 +17,23 @@
     background-color: yellow;
 }
 
+.container {
+    margin: 3vh;
+    padding: 0.2vh;
+    text-align: center;
+    font-size: min(5vw, 3vh);
+}
+
 .cell {
     display: flex;
+    width: max-content;
+    padding: min(0.3vw, 0.3vh);
+    aspect-ratio: 1/1;
     justify-content: center;
     align-items: center;
     text-align: center;
-    font-size: 2rem;
+    font-size: min(10vw, 10vh);
     border: 1px solid grey;
-    background: lightyellow;
+    background: rgb(204, 231, 202);
     cursor: pointer;
 }
