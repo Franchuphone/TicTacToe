@@ -23,16 +23,23 @@ function Gameboard() {
 
 function Cell() {
     let value;
+    let background = 0;
 
     const addMark = ( playerMark ) => {
         value = playerMark;
     };
 
+    const winBackground = () => background = 1;
+
     const getValue = () => value;
+
+    const getBackground = () => background;
 
     return {
         addMark,
-        getValue
+        getValue,
+        winBackground,
+        getBackground
     };
 }
 
@@ -45,13 +52,17 @@ function GameController(
     const players = [
         {
             name: playerOneName,
-            token: "X"
+            token: "X",
+            wins: 0
         },
         {
             name: playerTwoName,
-            token: "O"
+            token: "O",
+            wins: 0
         }
     ];
+
+    let boardState = true;
 
     let activePlayer = players[ 0 ];
 
@@ -69,49 +80,97 @@ function GameController(
     const playRound = ( cell ) => {
         if ( board.getBoard()[ cell ].getValue() ) return;
         console.log( `${ getActivePlayer().name } has just played` );
-        board.addBoardMark( cell, getActivePlayer().token );
+        board.addBoardMark( cell, activePlayer.token );
 
-        /*  This is where we would check for a winner and handle that logic,
-            such as a win message. */
+        // Check if last play has a winning combination
+
+        const winComb = winConditions( board.getBoard(), activePlayer.token );
+
+        if ( winComb.getWinState() ) {
+            activePlayer.wins += 1;
+            let winCells = winComb.getWinCombination();
+            for ( cell in winCells ) board.getBoard()[ winCells[ cell ] ].winBackground();
+            boardState = false;
+        }
 
         switchPlayerTurn();
         printNewRound();
     };
+
+    const getBoardState = () => boardState;
 
     printNewRound();
 
     return {
         playRound,
         getActivePlayer,
-        getBoard: board.getBoard
+        getBoard: board.getBoard,
+        getBoardState
     };
 }
+
+function winConditions( board, token ) {
+
+    let possibleCombinations = [
+        [ 0, 1, 2 ],
+        [ 0, 4, 8 ],
+        [ 0, 3, 6 ],
+        [ 1, 4, 7 ],
+        [ 2, 5, 8 ],
+        [ 2, 4, 6 ],
+        [ 3, 4, 5 ],
+        [ 6, 7, 8 ]
+    ]
+
+    let winCombination = [];
+
+    let winState = false;
+
+    for ( comb of possibleCombinations ) {
+        if ( ( board[ comb[ 0 ] ].getValue() == token ) && ( board[ comb[ 1 ] ].getValue() == token ) && ( board[ comb[ 2 ] ].getValue() == token ) ) {
+            winCombination = [ comb[ 0 ], comb[ 1 ], comb[ 2 ] ];
+            winState = true;
+        }
+    }
+
+    const getWinState = () => winState;
+
+    const getWinCombination = () => winCombination;
+
+    return {
+        getWinCombination,
+        getWinState
+    }
+};
 
 function ScreenController() {
     const game = GameController();
     const playerTurnDiv = document.querySelector( '.turn' );
     const boardDiv = document.querySelector( '.board' );
 
+    const getDiv = () => playerTurnDiv;
+
     const updateScreen = () => {
-        // clear the board
+
         boardDiv.textContent = "";
 
-        // get the newest version of the board and player turn
         const board = game.getBoard();
+
         const activePlayer = game.getActivePlayer();
 
-        // Display player's turn
-        playerTurnDiv.textContent = `${ activePlayer.name }'s turn...`
+        playerTurnDiv.textContent = `${ activePlayer.name }'s turn`
 
         // Render board squares
         board.forEach( ( cell, index ) => {
-            // Anything clickable should be a button!!
             const cellButton = document.createElement( "button" );
             cellButton.classList.add( "cell" );
-            // Create a data attribute to identify the column
-            // This makes it easier to pass into our `playRound` function 
+            // Create a data attribute to identify the cell
             cellButton.dataset.cell = index;
             cellButton.textContent = cell.getValue();
+            if ( cell.getBackground() === 1 ) {
+                cellButton.style.background = "rgb(219, 126, 100)";
+                boardDiv.removeEventListener( "click", clickHandlerBoard );
+            }
             boardDiv.appendChild( cellButton );
 
         } );
@@ -125,13 +184,16 @@ function ScreenController() {
 
         game.playRound( selectedCell );
         updateScreen();
-    }
+    };
+
     boardDiv.addEventListener( "click", clickHandlerBoard );
 
-    // Initial render
     updateScreen();
 
-    // We don't need to return anything from this module because everything is encapsulated inside this screen controller.
+    return {
+        clickHandlerBoard,
+        getDiv
+    }
 }
 
 ScreenController();
