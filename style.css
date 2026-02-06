@@ -4,25 +4,49 @@
     box-sizing: border-box;
 }
 
-.board {
-    margin: auto;
-    display: grid;
-    width: min(600px, 70%);
-    aspect-ratio: 1/1;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    border: 1px solid black;
-    gap: 2px;
-    padding: 2px;
-    background-color: yellow;
+:root {
+    --color-primary: rgb(204, 231, 202);
 }
 
-.container {
+.initial-state {
+    display: none;
+    width: 70%;
+    margin: auto;
+}
+
+.playing-state {
+    display: flex;
+    justify-content: center;
+}
+
+.container,
+.information {
     margin: 3vh;
     padding: 0.2vh;
     text-align: center;
     font-size: min(5vw, 3vh);
 }
+
+.board,
+.score-board,
+.game-ruler {
+    border: 1px solid #ccc;
+    padding: clamp(0.1em, calc(0.1em + 0.2vw), 0.4em);
+    border-radius: 0.2rem;
+}
+
+.board {
+    justify-self: right;
+    display: grid;
+    width: min(600px, 100%);
+    aspect-ratio: 1/1;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    border: 1px solid black;
+    gap: clamp(0.1em, 0.1em + 0.2vw, 0.4em);
+    background-color: rgba(247, 247, 119, 0.705);
+}
+
 
 .cell {
     display: flex;
@@ -34,6 +58,61 @@
     text-align: center;
     font-size: min(10vw, 10vh);
     border: 1px solid grey;
-    background: rgb(204, 231, 202);
+    background: var(--color-primary);
     cursor: pointer;
+}
+
+.win-cells {
+    background-color: rgb(219, 126, 100);
+}
+
+
+.score-board {
+    justify-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: var(--color-primary);
+    font-size: min(4vw, 2vh);
+}
+
+.score1,
+.score2 {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    > p {
+        font-size: 3em;
+    }
+}
+
+.game-ruler {
+    background-color: var(--color-primary);
+    font-weight: 800;
+    font-size: inherit;
+    transition: transform 0.5s ease;
+    padding: 0.6em 1.2em;
+}
+
+.game-ruler:hover {
+    box-shadow: inset -0.1em -0.1em 0.1em #ccc,
+        inset 0.1em 0.1em 0.1em #ccc;
+    transform: scale(1.1);
+}
+
+
+@media (max-width:800px) {
+
+    .playing-state {
+        flex-direction: column;
+        margin: auto;
+    }
+
+    .playing-state > * {
+        width: 80%;
+        margin: auto;
+    }
+
 }
