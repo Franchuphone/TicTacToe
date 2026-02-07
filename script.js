@@ -24,7 +24,7 @@ function Gameboard() {
 }
 
 function Cell() {
-    let value;
+    let value = "";
     let cellState = false;
 
     const addMark = ( playerMark ) => {
@@ -106,38 +106,39 @@ function GameController(
         getBoard: board.getBoard,
         resetBoard: board.resetBoard,
         getBoardState,
-        getAllPlayers
+        getAllPlayers,
+        switchPlayerTurn
     };
 }
 
 function ScreenController() {
     const game = GameController();
+    const activePlayer = game.getActivePlayer();
     const playerTurnDiv = document.querySelector( '.player-display' );
     const boardContainer = document.querySelector( ".board-container" );
     const boardDiv = document.querySelector( '.board' );
-    const btnNewRound = document.createElement( "button" );
+    // const btnNewRound = document.createElement( "button" );
     const scoreBoard = document.querySelector( ".score-board" );
+    // const playerChoiceDiv = document.querySelector( ".player-choice" );
 
-    // console.log( scoreBoard.lastElementChild.className )
-
-    btnNewRound.className = "game-ruler";
-    btnNewRound.textContent = "New round";
+    // Global screen changes on game startup
+    // playerChoiceDiv.classList.add( "not-visible" );
+    // btnNewRound.className = "game-ruler";
+    // btnNewRound.textContent = "New round";
     boardContainer.className = "board-container playing-state";
     startGame.getBtnGame().textContent = "Restart Game";
+    startGame.getBtnGame().removeEventListener( "click", ScreenController )
+    startGame.getBtnGame().addEventListener( "click", ScreenController )
+
 
     const updateScreen = () => {
-        console.log( game.getActivePlayer().token );
         const board = game.getBoard();
-        const activePlayer = game.getActivePlayer();
         const players = game.getAllPlayers();
 
-        // Update score on screen update
+        // Update boards on screen update
         updateScore( players[ 0 ].name, players[ 0 ].wins, players[ 1 ].name, players[ 1 ].wins );
-
-
         boardDiv.textContent = "";
         playerTurnDiv.textContent = `${ activePlayer.name }'s turn`
-
 
         // Render board squares
         board.forEach( ( cell, index ) => {
@@ -149,34 +150,51 @@ function ScreenController() {
             boardDiv.appendChild( cellButton );
         } );
 
-        // Check if a cell has a winning state
+        // Check if a cell has a winning state and changes its background color
         let winDisplayState = false;
         game.getBoard().forEach( ( cell, index ) => {
             if ( cell.getCellState() ) {
                 const winCell = document.querySelector( `[data-cell="${ index }"]` )
                 winCell.classList.add( "win-cells" );
                 winDisplayState = true;
+                relaunchGame();
             };
         } );
 
         // End round and launch next
-        if ( winDisplayState ) {
-            btnNewRound.addEventListener( "click", () => {
-                const cells = document.querySelectorAll( ".cell" );
-                cells.forEach( ( cell ) => {
-                    cell.textContent = "";
-                    cell.classList.remove( "win-cells" );
-                } );
-                playerTurnDiv.textContent = `${ activePlayer.name }'s turn`;
-                if ( scoreBoard.lastElementChild.className == "game-ruler" ) scoreBoard.lastElementChild.remove();
-                game.resetBoard();
-                boardDiv.addEventListener( "click", clickHandlerBoard );
-            } );
-            scoreBoard.append( btnNewRound );
-            boardDiv.removeEventListener( "click", clickHandlerBoard );
-            return
-        };
+        // if ( winDisplayState ) {
+        // btnNewRound.addEventListener( "click", () => {
+        //     if ( scoreBoard.lastElementChild.className == "game-ruler" ) scoreBoard.lastElementChild.remove();
+        //     boardDiv.addEventListener( "click", clickHandlerBoard );
+        // } );
+        // scoreBoard.append( btnNewRound );
+        // playerChoiceDiv.classList.remove( "not-visible" );
+        // boardDiv.removeEventListener( "click", clickHandlerBoard );
+        // };
+    }
 
+    async function relaunchGame() {
+        boardDiv.removeEventListener( "click", clickHandlerBoard );
+        await delay( 2000 )
+        const cells = document.querySelectorAll( ".cell" );
+        cells.forEach( ( cell ) => {
+            cell.textContent = "";
+            cell.classList.remove( "win-cells" );
+        } );
+        playerTurnDiv.textContent = `${ activePlayer.name }'s turn`;
+        game.resetBoard();
+        game.switchPlayerTurn();
+        boardDiv.addEventListener( "click", clickHandlerBoard );
+    }
+
+    async function handleRelaunch() {
+        let count = 0;
+        game.getBoard().forEach( ( cell ) => {
+            // console.log( cell.getValue() )
+            if ( cell.getValue() === "" ) count += 1
+        } );
+        console.log( count )
+        if ( count === 0 ) relaunchGame()
     }
 
     // Add event listener for the board
@@ -185,14 +203,16 @@ function ScreenController() {
         const selectedCell = e.target.dataset.cell;
         if ( !selectedCell ) return;
         game.playRound( selectedCell );
-        handleComputerRound( game.getBoard(), game, updateScreen() );
+        handleRelaunch();
+        handleComputerRound( game.getBoard(), game );
         updateScreen();
     };
 
-
-    ( game.getActivePlayer().token === "X" ) ? boardDiv.addEventListener( "click", clickHandlerBoard ) : handleComputerRound();
+    boardDiv.addEventListener( "click", clickHandlerBoard )
+    // ( game.getActivePlayer().token === "X" ) ? boardDiv.addEventListener( "click", clickHandlerBoard ) : handleComputerRound( game.getBoard(), game );
 
     updateScreen();
+
 }
 
 function winConditions( board, token ) {
@@ -257,14 +277,40 @@ function updateScore( user1, text1, user2, text2 ) {
     }
 };
 
-function handleComputerRound( board, game, update ) {
-    board.forEach( ( cell, index ) => {
+function sleep( ms ) {
+    let timeStart = new Date().getTime();
+    while ( true ) {
+        let elapsedTime = new Date().getTime() - timeStart;
+        if ( elapsedTime > ms ) {
+            break;
+        }
+    }
+}
 
-        // console.log( cell )
-        // if ( !cell.getValue() && index % 2 !== 0 ) cell.addMark( game.getActivePlayer().token )
-        update;
-    } )
+function wait( ms ) {
+    return new Promise( resolve => setTimeout( resolve, ms ) )
+}
 
+function handleComputerRound( board, game ) {
+    const playerChoice = document.querySelector( 'input[name="players"]:checked' );
+    let emptyCells = [];
+    let stop;
+    board.forEach( ( cell ) => {
+        if ( cell.getCellState() ) return stop = true;
+    } );
+    if ( stop ) {
+        console.log( "acrivates" )
+        game.switchPlayerTurn();
+        return;
+    }
+    if ( playerChoice.value === "2P" ) {
+        board.forEach( ( cell, index ) => {
+            console.log( cell.getValue() )
+            if ( cell.getValue() === "" ) emptyCells.push( index );
+        } );
+        let rand = Math.floor( Math.random() * emptyCells.length );
+        if ( emptyCells[ rand ] !== undefined ) game.playRound( emptyCells[ rand ] );
+    }
 }
 
 const startGame = ( function () {
@@ -275,6 +321,8 @@ const startGame = ( function () {
     const getBtnGame = () => btnGame;
 
     return {
-        getBtnGame
+        getBtnGame,
     }
 } )();
+
+const delay = ms => new Promise( res => setTimeout( res, ms ) );
