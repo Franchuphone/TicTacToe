@@ -74,7 +74,7 @@ body .not-visible {
 
 .cell {
     display: flex;
-    width: max-content;
+    width: 100%;
     padding: min(0.3vw, 0.3vh);
     aspect-ratio: 1/1;
     justify-content: center;
