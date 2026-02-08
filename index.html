@@ -13,15 +13,21 @@
         <div class="container">
             <h1 class="player-display"> A Tic Tac Toe?
         </div>
-        <div class="board-container initial-state">
+        <div class="board-container initial-state not-visible">
             <div class="board"></div>
             <div class="score-board">
                 <div class="score1"></div>
                 <div class="score2"></div>
             </div>
         </div>
+        <div class="player-choice">
+            <input type="radio" name="players" id="1P" value="1P" checked>
+            <label for="1P">1 Player</label>
+            <input type="radio" name="players" id="2P" value="2P">
+            <label for="2P">2 Players</label>
+        </div>
         <div class="information">
-            <button class="game-ruler">New Game</button>
+            <button class="game-ruler activated">New Game</button>
         </div>
         </div>
 
