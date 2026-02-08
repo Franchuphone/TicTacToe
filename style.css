@@ -124,7 +124,14 @@ body .not-visible {
     box-shadow: inset -0.1em -0.1em 0.1em #ccc,
         inset 0.1em 0.1em 0.1em #ccc;
     transform: scale(1.1);
+}
+
+.activated:hover {
     cursor: pointer;
+}
+
+.desactivated:hover {
+    cursor: not-allowed;
 }
 
 
