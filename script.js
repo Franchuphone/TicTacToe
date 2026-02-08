@@ -138,7 +138,7 @@ function ScreenController() {
         // Render board squares
         board.forEach( ( cell, index ) => {
             const cellButton = document.createElement( "button" );
-            cellButton.classList.add( "cell" );
+            cellButton.className = "cell activated";
             // Create a data attribute to identify the cell
             cellButton.dataset.cell = index;
             cellButton.textContent = cell.getValue();
