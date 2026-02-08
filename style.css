@@ -35,7 +35,7 @@ body .not-visible {
     font-size: min(5vw, 3vh);
 }
 
-.board,
+.cell,
 .score-board,
 .game-ruler {
     border: 1px solid #ccc;
@@ -66,9 +66,8 @@ body .not-visible {
     aspect-ratio: 1/1;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    border: 1px solid black;
     gap: clamp(0.1em, 0.1em + 0.2vw, 0.4em);
-    background-color: rgba(247, 247, 119, 0.705);
+    padding: clamp(0.1em, calc(0.1em + 0.2vw), 0.4em);
 }
 
 
@@ -81,13 +80,19 @@ body .not-visible {
     align-items: center;
     text-align: center;
     font-size: min(10vw, 10vh);
-    border: 1px solid grey;
     background: var(--color-primary);
-    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.cell:hover {
+    transform: scale(1.1);
+    border: 2px solid black;
+    z-index: 10;
 }
 
 .win-cells {
     background-color: rgb(219, 126, 100);
+    border: 2px solid rgb(112, 27, 4);
 }
 
 
