@@ -72,6 +72,10 @@ body .not-visible {
     padding: clamp(0.1em, calc(0.1em + 0.2vw), 0.4em);
 }
 
+.draw {
+    border: 3px solid var(--color-sec);
+}
+
 
 .cell {
     display: flex;
@@ -97,7 +101,19 @@ body .not-visible {
     border: 2px solid var(--color-ter);
     box-shadow: inset 2px 2px 0.5em var(--color-ter),
         inset -2px -2px 0.5em var(--color-ter);
-    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    animation: Popup 1s ease;
+}
+
+.win-cells.activated:nth-child(1) {
+    animation-delay: 0.3s;
+}
+
+.win-cells.activated:nth-child(2) {
+    animation-delay: 0.6s;
+}
+
+.win-cells.activated:nth-child(3) {
+    animation-delay: 0.9s;
 }
 
 
@@ -156,5 +172,18 @@ body .not-visible {
         width: 80%;
         margin: auto;
     }
+}
 
+@keyframes Popup {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }

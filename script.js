@@ -184,6 +184,7 @@ function ScreenController() {
         boardDiv.addEventListener( "click", clickHandlerBoard );
         startGame.getBtnGame().addEventListener( "click", ScreenController );
         startGame.getBtnGame().classList.remove( "desactivated" );
+        boardDiv.classList.remove( "draw" );
     }
 
     // Check for a draw
@@ -192,7 +193,10 @@ function ScreenController() {
         game.getBoard().forEach( ( cell ) => {
             if ( cell.getValue() === "" ) count += 1
         } );
-        if ( count === 0 ) relaunchGame();
+        if ( count === 0 ) {
+            relaunchGame();
+            boardDiv.classList.add( "draw" );
+        }
     }
 
     // Add event listener for the board
