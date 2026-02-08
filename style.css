@@ -6,6 +6,8 @@
 
 :root {
     --color-primary: rgb(204, 231, 202);
+    --color-sec: rgb(219, 181, 100);
+    --color-ter: rgb(112, 65, 4);
 }
 
 h1 {
@@ -91,8 +93,11 @@ body .not-visible {
 }
 
 .win-cells {
-    background-color: rgb(219, 126, 100);
-    border: 2px solid rgb(112, 27, 4);
+    background-color: var(--color-sec);
+    border: 2px solid var(--color-ter);
+    box-shadow: inset 2px 2px 0.5em var(--color-ter),
+        inset -2px -2px 0.5em var(--color-ter);
+    transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 }
 
 
